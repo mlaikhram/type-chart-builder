@@ -11,28 +11,32 @@ class TypeCombo extends React.Component {
 
         return (
             <div>
-                <table>
-                    <thead>
-                        <tr>
-                            {typeArr.map((typeName, index) => VerticalTypeCellMap(this.props.typeLookup, typeName, index))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {typeArr.map((typeName, index) => (<TypeMultiplierCell typeLookup={this.props.typeLookup} defendingTypeNames={this.props.typeCombo.types} attackIndex={index} edittable={false} />))}
-                        </tr>
-                    </tbody>
-                </table>
-                <Row>
-                    <Col sm={4}>
-                        <Input type="text" maxLength="20" value={this.props.typeCombo.name} onChange={this.props.onNameChange} />
-                    </Col>
-                    <Col sm={8}>
-                        <Row>
-                            {this.props.typeCombo.types.map((type) => (<HorizontalTypeCell type={type} color={this.props.typeLookup[type].color} />))}
-                        </Row>
-                     </Col>
-                </Row>
+                <Col>
+                    <Row>
+                        <Col sm={4} style={{ paddingLeft: 0, paddingRight: '5px' }}>
+                            <Input type="text" maxLength="20" value={this.props.typeCombo.name} onChange={this.props.onNameChange} />
+                        </Col>
+                        <Col sm={8}>
+                            <Row>
+                                {this.props.typeCombo.types.map((type) => (<HorizontalTypeCell key={type} type={type} color={this.props.typeLookup[type].color} />))}
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Row style={{ paddingTop: '40px' }}>
+                        <table>
+                            <thead>
+                                <tr>
+                                    {typeArr.map((typeName, index) => VerticalTypeCellMap(this.props.typeLookup, typeName, index))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {typeArr.map((typeName, index) => (<TypeMultiplierCell key={typeName} typeLookup={this.props.typeLookup} defendingTypeNames={this.props.typeCombo.types} attackIndex={index} edittable={false} />))}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </Row>
+                </Col>
             </div>
             );
     }

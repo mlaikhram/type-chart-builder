@@ -15,7 +15,7 @@ function App() {
     return (
         <div className="App">
             <Navbar color="dark" dark expand="md">
-                <NavbarBrand href="/">TypeCharts</NavbarBrand>
+                <NavbarBrand>TypeCharts</NavbarBrand>
                 <Collapse navbar>
                     <Nav className="mr-auto" navbar>
                         <NavItem>
