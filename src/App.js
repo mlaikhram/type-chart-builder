@@ -1,25 +1,36 @@
-import logo from './logo.svg';
+import {
+    Collapse,
+    Navbar,
+    NavbarBrand,
+    Nav,
+    NavItem,
+    NavLink,
+    NavbarText
+} from 'reactstrap';
 import './App.css';
+import TypeChart from './components/TypeChart';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <Navbar color="dark" dark expand="md">
+                <NavbarBrand href="/">TypeCharts</NavbarBrand>
+                <Collapse navbar>
+                    <Nav className="mr-auto" navbar>
+                        <NavItem>
+                            <NavLink href="/components/">Components</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
+                        </NavItem>
+                    </Nav>
+                    <NavbarText>Simple Text</NavbarText>
+                </Collapse>
+            </Navbar>
+            <TypeChart />
+        </div>
+    );
 }
 
 export default App;
