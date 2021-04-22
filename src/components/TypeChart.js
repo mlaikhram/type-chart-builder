@@ -7,6 +7,8 @@ import VerticalTypeCellMap from './VerticalTypeCellMap';
 import TypeMultiplierCell from './TypeMultiplierCell';
 import HorizontalTypeCell from './HorizontalTypeCell';
 import TypeField from './TypeField';
+import { FaPlus } from 'react-icons/fa';
+
 
 class TypeChart extends React.Component {
     constructor() {
@@ -19,16 +21,19 @@ class TypeChart extends React.Component {
                 edit: false
             },
             types: {
-                'Rock': { color: '#F0F8FF', values: [1, 2, 0.5]},
-                'Paper': { color: '#F5F5DC', values: [0.5, 1, 2] },
-                'Scissors': { color: '#7FFFD4', values: [2, 0.5, 1] }
+                'Human': { color: '#C77B3D', values: [2, 1, 2, 1, 2, 2]},
+                'Bug': { color: '#86FF24', values: [2, 0.5, 1, 1, 1, 0.5] },
+                'Tech': { color: '#B6CDC6', values: [0.5, 2, 2, 2, 0, 0] },
+                'Coder': { color: '#00F010', values: [1, 2, 0.5, 0.5, 2, 0] },
+                'Meeting': { color: '#E60000', values: [0.5, 0.5, 2, 0.5, 0.5, 1] },
+                'Sleep': { color: '#3D3D3D', values: [0.5, 2, 1, 2, 0.5, 2] }
             },
             typeCombos: [
                 {
-                    name: 'Office',
+                    name: 'Programmer',
                     types: [
-                        'Paper',
-                        'Scissors'
+                        'Human',
+                        'Coder'
                     ]
                 }
             ],
@@ -75,10 +80,12 @@ class TypeChart extends React.Component {
     handleEditTypeNameChanged(e, index) {
         const newName = e.target.value;
 
-        this.setState((state) => {
-            state.editTypes[index].newName = newName;
-            return state;
-        });
+        if (/^[a-zA-Z]/.test(newName) || newName.length <= 0) {
+            this.setState((state) => {
+                state.editTypes[index].newName = newName;
+                return state;
+            });
+        }
     }
 
     handleEditTypeColorChanged(e, index) {
@@ -206,6 +213,37 @@ class TypeChart extends React.Component {
         });
     }
 
+    handleTypeComboAdd() {
+        const newTypeCombos = [{
+            name: '',
+            types: []
+        }].concat(this.state.typeCombos);
+        this.setState((state) => {
+            state.typeCombos = newTypeCombos;
+            return state;
+        })
+    }
+
+    handleTypeComboTypeClicked(index, typeName) {
+        console.log('type: ' + typeName);
+        const newTypes = this.state.typeCombos[index].types.includes(typeName) ?
+            this.state.typeCombos[index].types.filter((_) => _ !== typeName) : 
+            this.state.typeCombos[index].types.concat(typeName);
+
+        this.setState((state) => {
+            state.typeCombos[index].types = newTypes;
+            return state;
+        });
+    }
+
+    handleTypeComboDelete(index) {
+        const newTypeCombos = this.state.typeCombos.filter((_, i) => i !== index);
+        this.setState((state) => {
+            state.typeCombos = newTypeCombos;
+            return state;
+        });
+    }
+
     render() {
         const typesArr = Object.keys(this.state.types);
         return (
@@ -240,16 +278,19 @@ class TypeChart extends React.Component {
                         </Row>
                     </Col>
                     <Col>
-                        <TypeCombo typeLookup={this.state.types} typeCombo={this.state.typeCombos[0]} onNameChange={(e) => this.handleNameChange(e, 0)} />
+                        <Button color="success" block onClick={() => this.handleTypeComboAdd()} style={{ marginBottom: '1%' }}><FaPlus /></Button>
+                        <ListGroup>
+                            {this.state.typeCombos.map((typeCombo, index) => (<TypeCombo key={index} uniqueId={index} typeLookup={this.state.types} typeCombo={typeCombo} onNameChange={(e) => this.handleNameChange(e, index)} onTypeClick={(typeName) => this.handleTypeComboTypeClicked(index, typeName)} onDelete={() => this.handleTypeComboDelete(index)} />))}
+                        </ListGroup>
                     </Col>
                 </Row>
                 <Modal isOpen={this.state.modalVisibility.edit} backdrop="static" toggle={() => this.handleModalToggle('edit')}>
                     <ModalHeader toggle={() => this.handleModalToggle('edit')}>Edit Type Chart</ModalHeader>
                     <ModalBody>
-                        <ListGroup>
-                            {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={"editType" + index} typeName={editType.newName} color={editType.color} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
+                        <ListGroup flush>
+                            {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
                         </ListGroup>
-                        <Button color="success" block onClick={() => this.handleEditTypeAdd()} style={{ marginTop: '2%' }}>+</Button>
+                        <Button color="success" block onClick={() => this.handleEditTypeAdd()} style={{ marginTop: '2%' }}><FaPlus /></Button>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="success" onClick={() => this.handleEditTypesSubmit()}>Save</Button>
