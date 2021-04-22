@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, ListGroup } from 'reactstrap';
+import { Row, Col, Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ListGroup } from 'reactstrap';
 import { View, Text } from 'react-native';
 import { exportComponentAsPNG } from 'react-component-export-image';
 import TypeCombo from './TypeCombo';
@@ -20,6 +20,7 @@ class TypeChart extends React.Component {
             modalVisibility: {
                 edit: false
             },
+            title: 'Industry Type Chart',
             types: {
                 'Human': { color: '#C77B3D', values: [2, 1, 2, 1, 2, 2]},
                 'Bug': { color: '#86FF24', values: [2, 0.5, 1, 1, 1, 0.5] },
@@ -28,6 +29,7 @@ class TypeChart extends React.Component {
                 'Meeting': { color: '#E60000', values: [0.5, 0.5, 2, 0.5, 0.5, 1] },
                 'Sleep': { color: '#3D3D3D', values: [0.5, 2, 1, 2, 0.5, 2] }
             },
+            activeTypeComboIndex: -1,
             typeCombos: [
                 {
                     name: 'Programmer',
@@ -37,6 +39,7 @@ class TypeChart extends React.Component {
                     ]
                 }
             ],
+            editTitle: '',
             editTypes: [
                 {
                     oldName: '',
@@ -75,6 +78,14 @@ class TypeChart extends React.Component {
                 {typesArr.map((typeName, innerIndex) => (<TypeMultiplierCell key={index + "_" + innerIndex} typeLookup={this.state.types} defendingTypeNames={[typesArr[innerIndex]]} attackIndex={index} edittable={true} onChange={(e) => this.handleTypeMultiplierCellChange(e, typesArr[innerIndex], index)} />))}
             </tr>
             );
+    }
+
+    handleEditTitleNameChanged(e) {
+        const newTitle = e.target.value;
+        this.setState((state) => {
+            state.editTitle = newTitle;
+            return state;
+        })
     }
 
     handleEditTypeNameChanged(e, index) {
@@ -150,6 +161,7 @@ class TypeChart extends React.Component {
             });
         }
         else {
+            const newTitle = this.state.editTitle;
             // construct type chart and fix any new type refs
             const newTypes = {};
             for (let defendIndex = 0; defendIndex < this.state.editTypes.length; ++defendIndex) {
@@ -183,6 +195,7 @@ class TypeChart extends React.Component {
                 newTypeCombos.push(typeCombo);
             }
             this.setState((state) => {
+                state.title = newTitle;
                 state.types = newTypes;
                 state.typeCombos = newTypeCombos;
                 state.modalVisibility.edit = false;
@@ -192,7 +205,9 @@ class TypeChart extends React.Component {
     }
 
     handleOpenEditModal() {
+        const editTitle = this.state.title;
         this.setState((state) => {
+            state.editTitle = editTitle;
             state.editTypes = Object.keys(this.state.types).map((typeName) => {
                 return {
                     oldName: typeName,
@@ -220,8 +235,17 @@ class TypeChart extends React.Component {
         }].concat(this.state.typeCombos);
         this.setState((state) => {
             state.typeCombos = newTypeCombos;
+            state.activeTypeComboIndex = 0;
             return state;
         })
+    }
+
+    handleTypeComboActive(index) {
+        const newIndex = this.state.activeTypeComboIndex === index ? -1 : index;
+        this.setState((state) => {
+            state.activeTypeComboIndex = newIndex;
+            return state;
+        });
     }
 
     handleTypeComboTypeClicked(index, typeName) {
@@ -240,52 +264,59 @@ class TypeChart extends React.Component {
         const newTypeCombos = this.state.typeCombos.filter((_, i) => i !== index);
         this.setState((state) => {
             state.typeCombos = newTypeCombos;
+            state.activeTypeComboIndex = -1;
             return state;
         });
     }
 
     render() {
         const typesArr = Object.keys(this.state.types);
+        console.log(this.state);
         return (
             <div className="container-fluid">
                 <Row style={{ paddingTop: '40px' }}>
                     <Col style={{ paddingLeft: '5%', paddingBottom: '5%' }}>
                         <Row>
-                            <div ref={this.typeChartImageRef} style={{ paddingLeft: '40px' }}>
-                                <h4>
-                                    <Text style={{ fontSize: 20 }}>
+                            <div ref={this.typeChartImageRef}>
+                                <Text style={{ paddingLeft: '1%', paddingBottom: '4%', display: 'inherit', textAlign: 'left', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF' }}>{this.state.title}</Text>
+                                <div style={{ paddingLeft: '40px' }}>
+                                    <h6>
+                                        <Text style={{ fontSize: 20, fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', }}>
                                             Defending Type
-                                    </Text>
-                                </h4>
-                                <View style={{ paddingTop: '40px', transform: [{ translateX: -40 }] }}>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <td />
-                                                {typesArr.map((typeName, index) => VerticalTypeCellMap(this.state.types, typeName, index))}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {typesArr.map((typeName, index) => this.horizontalTypeMap(typesArr, typeName, index))}
-                                        </tbody>
-                                    </table>
-                                </View>
+                                        </Text>
+                                    </h6>
+                                    <View style={{ paddingTop: '40px', transform: [{ translateX: -40 }] }}>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <td />
+                                                    {typesArr.map((typeName, index) => VerticalTypeCellMap(this.state.types, typeName, index))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {typesArr.map((typeName, index) => this.horizontalTypeMap(typesArr, typeName, index))}
+                                            </tbody>
+                                        </table>
+                                    </View>
+                                </div>
                             </div>
                         </Row>
                         <Row style={{ paddingTop: '2%' }}>
                             <Button color="info" size='sm' onClick={() => this.handleOpenEditModal()}>Edit</Button>
-                            <Button color="success" size='sm' onClick={() => exportComponentAsPNG(this.typeChartImageRef, {fileName: 'typeChart'})}>Export</Button>
+                            <Button color="success" size='sm' onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: 'typeChart' })}>Export</Button>
                         </Row>
                     </Col>
                     <Col>
                         <Button color="success" block onClick={() => this.handleTypeComboAdd()} style={{ marginBottom: '1%' }}><FaPlus /></Button>
                         <ListGroup>
-                            {this.state.typeCombos.map((typeCombo, index) => (<TypeCombo key={index} uniqueId={index} typeLookup={this.state.types} typeCombo={typeCombo} onNameChange={(e) => this.handleNameChange(e, index)} onTypeClick={(typeName) => this.handleTypeComboTypeClicked(index, typeName)} onDelete={() => this.handleTypeComboDelete(index)} />))}
+                            {this.state.typeCombos.map((typeCombo, index) => (<TypeCombo key={index} active={this.state.activeTypeComboIndex === index} typeLookup={this.state.types} typeCombo={typeCombo} onActive={() => this.handleTypeComboActive(index)} onNameChange={(e) => this.handleNameChange(e, index)} onTypeClick={(typeName) => this.handleTypeComboTypeClicked(index, typeName)} onDelete={() => this.handleTypeComboDelete(index)} />))}
                         </ListGroup>
                     </Col>
                 </Row>
                 <Modal isOpen={this.state.modalVisibility.edit} backdrop="static" toggle={() => this.handleModalToggle('edit')}>
-                    <ModalHeader toggle={() => this.handleModalToggle('edit')}>Edit Type Chart</ModalHeader>
+                    <ModalHeader toggle={() => this.handleModalToggle('edit')}>
+                        <Input id="title" type="text" onChange={(e) => this.handleEditTitleNameChanged(e)} value={this.state.editTitle} />
+                    </ModalHeader>
                     <ModalBody>
                         <ListGroup flush>
                             {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
@@ -298,7 +329,7 @@ class TypeChart extends React.Component {
                     </ModalFooter>
                 </Modal>
             </div>
-            );
+        );
     }
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input } from 'reactstrap';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Textfit } from 'react-textfit';
 
 
 class TypeMultiplierCell extends React.Component {
@@ -35,7 +36,8 @@ class TypeMultiplierCell extends React.Component {
     handleOnValueChange(e) {
         const newValue = e.target.value;
         const valueString = newValue.toString();
-        if (!valueString.includes('-') && newValue >= 0 && newValue < 100 && (!valueString.includes('.') || valueString.split('.')[1].length <= 2)) {
+        console.log('value: ' + valueString);
+        if (!valueString.includes('-') && newValue >= 0) {
             this.setState((state) => {
                 state.editValue = newValue;
                 return state;
@@ -58,16 +60,40 @@ class TypeMultiplierCell extends React.Component {
         }
     }
 
+    calculateBackgroundColor(multiplierValue) {
+        if (multiplierValue === 0) {
+            return '#646464';
+        }
+        else if (multiplierValue === 1) {
+            return '#E6E6FA';
+        }
+        else {
+            const linearValue = Math.log2(multiplierValue);
+            const linearMax = 2;
+
+            const ratio = 1 - Math.min(Math.abs(linearValue), linearMax) / linearMax;
+            const partialHexComp = Math.round(ratio * 255).toString(16);
+            const hexComp = partialHexComp.length > 1 ? partialHexComp : ('0' + partialHexComp);
+            if (linearValue < 0) {
+                return '#' + hexComp + 'FF' + hexComp;
+            }
+            else {
+                return '#FF' + hexComp + hexComp;
+            }
+        }
+    }
+
     render() {
         if (this.props.edittable && this.state.editting) {
             return (
                 <td><View style={{ height: '40px', width: '40px' }}><Input type='number' min={0} max={99} precision={2} autoFocus onBlur={() => this.handleOnBlur()} onKeyDown={(e) => this.handleKeyPress(e)} onMouseEnter={() => this.handleOnMouseHover(true)} onMouseLeave={() => this.handleOnMouseHover(false)} style={{ height: '40px', width: '40px', lineHeight: '40px', textAlign: 'center', paddingLeft: '0', paddingRight: '0' }} value={this.state.editValue} onChange={(e) => this.handleOnValueChange(e)} /></View></td>
             );
         }
-        else { // TODO: background color on log2 scale
+        else {
             const multiplierValue = this.props.defendingTypeNames.map((type) => this.props.typeLookup[type].values[this.props.attackIndex]).reduce((acc, currentVal) => acc * currentVal, 1);
+            const backgroundColor = this.calculateBackgroundColor(multiplierValue);
             return (
-                <td><View style={{ height: '40px', width: '40px' }}><Text onClick={() => this.handleOnClick(multiplierValue)} onMouseEnter={() => this.handleOnMouseHover(true)} onMouseLeave={() => this.handleOnMouseHover(false)} style={{ height: '40px', width: '40px', lineHeight: '40px', borderColor: '#80BDFF', borderWidth: ((this.props.edittable && this.state.hovering) ? 'thin' : ''), textAlign: 'center', cursor: (this.props.edittable ? 'pointer' : '')}}>{multiplierValue}</Text></View></td>
+                <td><View onMouseEnter={() => this.handleOnMouseHover(true)} onMouseLeave={() => this.handleOnMouseHover(false)} style={{ height: '40px', width: '40px' }}><Textfit mode="single" forceSingleModeWidth={false} max={20} onClick={() => this.handleOnClick(multiplierValue)} style={{ height: '40px', width: '40px', lineHeight: '40px', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', backgroundColor: backgroundColor, borderRadius: ((this.props.edittable && this.state.hovering) ? 0 : 10), textAlign: 'center', cursor: (this.props.edittable ? 'pointer' : '')}}>{multiplierValue}</Textfit></View></td>
             );
         }
     }

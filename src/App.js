@@ -22,10 +22,10 @@ function App() {
                             <NavLink href="/components/">Components</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
+                            <NavLink href="https://github.com/mlaikhram/type-chart-builder" target="_blank">GitHub</NavLink>
                         </NavItem>
                     </Nav>
-                    <NavbarText>Simple Text</NavbarText>
+                    <NavbarText>Made by Matthew Laikhram</NavbarText>
                 </Collapse>
             </Navbar>
             <TypeChart />
