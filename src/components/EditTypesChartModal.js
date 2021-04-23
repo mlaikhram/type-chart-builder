@@ -10,14 +10,7 @@ class EditTypesChartModal extends React.Component {
         super();
         this.state = {
             editTitle: '',
-            editTypes: [
-                {
-                    oldName: '',
-                    newName: '',
-                    color: '',
-                    errorMessage: ''
-                }
-            ]
+            editTypes: []
         };
     }
 

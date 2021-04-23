@@ -1,17 +1,16 @@
 import React from 'react';
-import { Row, Col, Button, Input, Card, CardTitle, CardText, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import { View, Text } from 'react-native';
-import { exportComponentAsPNG } from 'react-component-export-image';
 import TypeCombo from './TypeCombo';
 import VerticalTypeCellMap from './VerticalTypeCellMap';
 import TypeMultiplierCell from './TypeMultiplierCell';
 import HorizontalTypeCell from './HorizontalTypeCell';
 import EditTypesChartModal from './EditTypesChartModal';
+import ImportTypeChartModal from './ImportTypeChartModal';
 import ExportTypeChartModal from './ExportTypeChartModal';
 import { FaPlus } from 'react-icons/fa';
 import { BiEditAlt } from 'react-icons/bi';
 import { AiOutlineExport, AiOutlineImport } from 'react-icons/ai';
-
 
 
 class TypeChart extends React.Component {
@@ -43,9 +42,7 @@ class TypeChart extends React.Component {
                         'Coder'
                     ]
                 }
-            ],
-            importFileError: '',
-            importFile: null
+            ]
         }
     }
 
@@ -112,14 +109,6 @@ class TypeChart extends React.Component {
         });
     }
 
-    handleOpenImportModal() {
-        this.setState((state) => {
-            state.importFile = null;
-            state.importFileError = '';
-            return state;
-        }, () => this.handleModalToggle('import'));
-    }
-
     handleModalToggle(modalName) {
         const prev = this.state.modalVisibility[modalName];
         this.setState((state) => {
@@ -155,110 +144,14 @@ class TypeChart extends React.Component {
         });
     }
 
-    handleImportFileUpload(e) {
-        const file = e.target.files[0];
+    handleImport(title, types, typeCombos) {
         this.setState((state) => {
-            state.importFile = file;
-            state.importFileError = "";
+            state.title = title;
+            state.types = types;
+            state.typeCombos = typeCombos;
+            state.modalVisibility.import = false;
             return state;
-        })
-    }
-
-    handleImportFromFile() {
-        if (!this.state.importFile) {
-            this.setState((state) => {
-                state.importFileError = "You must upload a file to import!";
-                return state;
-            })
-        }
-        else {
-            const file = this.state.importFile;
-            const fileReader = new FileReader();
-            fileReader.onload = (e) => {
-                const text = e.target.result;
-                try {
-                    // parse to JSON
-                    const importedData = JSON.parse(text);
-                    // check for title
-                    if (!importedData.hasOwnProperty("title")) {
-                        throw new Error('Missing or invalid title');
-                    }
-                    // check for types
-                    else if (importedData.hasOwnProperty("types")) {
-                        const typeNames = Object.keys(importedData.types);
-                        typeNames.forEach((typeName) => {
-                            // check for valid type name
-                            if (!/^[a-zA-Z]/.test(typeName)) {
-                                throw new Error('Invalid type: ' + typeName);
-                            }
-                            // check for valid object structure
-                            else if (!(typeof importedData.types[typeName] === 'object' && importedData.types[typeName] !== null)) {
-                                throw new Error('Invalid or missing type body: ' + typeName);
-                            }
-                            // check for valid color
-                            else if (!importedData.types[typeName].hasOwnProperty("color") || !/^#[0-9A-Fa-f]{6}$/i.test(importedData.types[typeName].color)) {
-                                throw new Error('Invalid or missing color');
-                            }
-                            // check for valid values
-                            else if (!(importedData.types[typeName].hasOwnProperty("values") && Array.isArray(importedData.types[typeName].values) &&
-                                importedData.types[typeName].values.length === typeNames.length &&
-                                importedData.types[typeName].values.every((value) => !isNaN(value) && Number(value) >= 0))) {
-                                throw new Error('Invalid or missing values');
-                            }
-                        });
-                        // check for typeCombos
-                        if (importedData.hasOwnProperty("typeCombos") && Array.isArray(importedData.typeCombos) &&
-                            importedData.typeCombos.every((typeCombo) => typeof typeCombo === 'object' && typeCombo !== null &&
-                                typeCombo.hasOwnProperty("name") &&
-                                typeCombo.hasOwnProperty("types") && Array.isArray(typeCombo.types) && typeCombo.types.every((typeName) => typeNames.includes(typeName)))) {
-                            // finally import data
-                            this.setState((state) => {
-                                state.title = importedData.title;
-                                state.types = importedData.types;
-                                state.typeCombos = importedData.typeCombos;
-                                state.importFile = null;
-                                state.importFileError = "";
-                                state.modalVisibility.import = false;
-                                return state;
-                            });
-                        }
-                        else {
-                            throw new Error('invalid or missing typeCombos');
-                        }
-                    }
-                    else {
-                        throw new Error('Missing types');
-                    }
-                }
-                catch (e) {
-                    console.log(e);
-                    this.setState((state) => {
-                        state.importFile = null;
-                        state.importFileError = "Error parsing file: " + e.message;
-                        return state;
-                    })
-                }
-            }
-            fileReader.onerror = (e) => {
-                this.setState((state) => {
-                    state.importFile = null;
-                    state.importFileError = "Error reading file: " + fileReader.error;
-                    return state;
-                });
-            }
-            try {
-                console.log('file');
-                console.log(file);
-                fileReader.readAsText(file, "UTF-8");
-            }
-            catch (e) {
-                this.setState((state) => {
-                    state.importFile = null;
-                    state.importFileError = "An unexpected error occurred. Please try again.";
-                    return state;
-                });
-            }
-        }
+        });
     }
 
     render() {
@@ -295,7 +188,7 @@ class TypeChart extends React.Component {
                         </Row>
                         <Row style={{ paddingTop: '2%' }}>
                             <Button color="info" onClick={() => this.handleModalToggle('edit')}><BiEditAlt /></Button>
-                            <Button color="primary" onClick={() => this.handleOpenImportModal()}><AiOutlineImport /></Button>
+                            <Button color="primary" onClick={() => this.handleModalToggle('import')}><AiOutlineImport /></Button>
                             <Button color="success" onClick={() => this.handleModalToggle('export')}><AiOutlineExport /></Button>
                         </Row>
                     </Col>
@@ -306,33 +199,8 @@ class TypeChart extends React.Component {
                         </div>
                     </Col>
                 </Row>
-
                 <EditTypesChartModal title={this.state.title} types={this.state.types} modalVisibility={this.state.modalVisibility.edit} toggle={() => this.handleModalToggle('edit')} onSubmit={(form) => this.handleEditTypesSubmit(form)} />
-
-                {/*Import Type Chart Modal*/}
-                <Modal isOpen={this.state.modalVisibility.import} backdrop="static" toggle={() => this.handleModalToggle('import')}>
-                    <ModalHeader toggle={() => this.handleModalToggle('import')}>
-                        Import Type Chart
-                    </ModalHeader>
-                    <ModalBody>
-                        <Card body style={{ marginBottom: '2%' }}>
-                            <CardTitle tag="h4">Import from Preset</CardTitle>
-                            <CardText>Import a premade type chart to view and customize.</CardText>
-                            <CardText />
-                            <Button color="success" onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: this.state.title.replaceAll(' ', '-'), letterRendering: true, scale: 2 })}>Import</Button>
-                        </Card>
-                        <Card body>
-                            <CardTitle tag="h4">Import from JSON</CardTitle>
-                            <CardText>Import a previously created type chart from a JSON file.</CardText>
-                            <CardText><Input type="file" accept=".tych.json" onChange={(e) => this.handleImportFileUpload(e)} /><span style={{ color: '#FF0000', display: 'inline-block' }}>{this.state.importFileError}</span></CardText>
-                            <Button color="success" onClick={() => this.handleImportFromFile()}>Import</Button>
-                        </Card>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="danger" onClick={() => this.handleModalToggle('import')}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
-
+                <ImportTypeChartModal onImport={(title, types, typeCombos) => this.handleImport(title, types, typeCombos)} modalVisibility={this.state.modalVisibility.import} toggle={() => this.handleModalToggle('import')} />
                 <ExportTypeChartModal title={this.state.title} types={this.state.types} typeCombos={this.state.typeCombos} typeChartImageRef={this.typeChartImageRef} modalVisibility={this.state.modalVisibility.export} toggle={() => this.handleModalToggle('export')} />
             </div>
         );
