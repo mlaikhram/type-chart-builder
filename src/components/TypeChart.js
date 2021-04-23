@@ -1,13 +1,16 @@
 import React from 'react';
-import { Row, Col, Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ListGroup } from 'reactstrap';
+import { Row, Col, Button, Input, Label, Card, CardTitle, CardText, Modal, ModalHeader, ModalBody, ModalFooter, ListGroup } from 'reactstrap';
 import { View, Text } from 'react-native';
 import { exportComponentAsPNG } from 'react-component-export-image';
+import { saveAs } from 'file-saver';
 import TypeCombo from './TypeCombo';
 import VerticalTypeCellMap from './VerticalTypeCellMap';
 import TypeMultiplierCell from './TypeMultiplierCell';
 import HorizontalTypeCell from './HorizontalTypeCell';
 import TypeField from './TypeField';
 import { FaPlus } from 'react-icons/fa';
+import { BiEditAlt } from 'react-icons/bi';
+import { AiOutlineExport, AiOutlineImport } from 'react-icons/ai';
 
 
 class TypeChart extends React.Component {
@@ -18,7 +21,8 @@ class TypeChart extends React.Component {
 
         this.state = {
             modalVisibility: {
-                edit: false
+                edit: false,
+                export: false
             },
             title: 'Industry Type Chart',
             types: {
@@ -47,7 +51,8 @@ class TypeChart extends React.Component {
                     color: '',
                     errorMessage: ''
                 }
-            ]
+            ],
+            exportIncludeTypecombos: false
         }
     }
 
@@ -220,6 +225,12 @@ class TypeChart extends React.Component {
         }, () => this.handleModalToggle('edit'));
     }
 
+    handleOpenExportModal() {
+        this.setState((state) => {
+            return state;
+        }, () => this.handleModalToggle('export'));
+    }
+
     handleModalToggle(modalName) {
         const prev = this.state.modalVisibility[modalName];
         this.setState((state) => {
@@ -269,6 +280,26 @@ class TypeChart extends React.Component {
         });
     }
 
+    handleExportCheckboxChange(e) {
+        const checked = e.target.checked;
+        console.log('checked? ' + checked);
+        this.setState((state) => {
+            state.exportIncludeTypecombos = checked;
+            return state;
+        });
+    }
+
+    handleExportAsJSON() {
+        console.log('exporting as json');
+        const exportData = {
+            title: this.state.title,
+            types: this.state.types,
+            typeCombos: (this.state.exportIncludeTypecombos ? this.state.typeCombos : [])
+        }
+        const blob = new Blob([JSON.stringify(exportData)], { type: "application/json;charset=utf-8" });
+        saveAs(blob, this.state.title.replaceAll(' ', '-') + ".tych.json");
+    }
+
     render() {
         const typesArr = Object.keys(this.state.types);
         console.log(this.state);
@@ -278,7 +309,7 @@ class TypeChart extends React.Component {
                     <Col style={{ paddingLeft: '5%', paddingBottom: '5%' }}>
                         <Row>
                             <div ref={this.typeChartImageRef}>
-                                <Text style={{ paddingLeft: '1%', paddingBottom: '4%', display: 'inherit', textAlign: 'left', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF' }}>{this.state.title}</Text>
+                                <Text style={{ paddingLeft: '1%', paddingBottom: '4%', display: 'inherit', textAlign: 'center', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', transform: [{ translateX: -40 }] }}>{this.state.title}</Text>
                                 <div style={{ paddingLeft: '40px' }}>
                                     <h6>
                                         <Text style={{ fontSize: 20, fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', }}>
@@ -302,8 +333,9 @@ class TypeChart extends React.Component {
                             </div>
                         </Row>
                         <Row style={{ paddingTop: '2%' }}>
-                            <Button color="info" size='sm' onClick={() => this.handleOpenEditModal()}>Edit</Button>
-                            <Button color="success" size='sm' onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: 'typeChart' })}>Export</Button>
+                            <Button color="info" onClick={() => this.handleOpenEditModal()}><BiEditAlt /></Button>
+                            <Button color="secondary" onClick={() => this.handleModalToggle('export')}><AiOutlineImport /></Button>
+                            <Button color="success" onClick={() => this.handleModalToggle('export')}><AiOutlineExport /></Button>
                         </Row>
                     </Col>
                     <Col>
@@ -326,6 +358,28 @@ class TypeChart extends React.Component {
                     <ModalFooter>
                         <Button color="success" onClick={() => this.handleEditTypesSubmit()}>Save</Button>
                         <Button color="danger" onClick={() => this.handleModalToggle('edit')}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+                <Modal isOpen={this.state.modalVisibility.export} backdrop="static" toggle={() => this.handleModalToggle('export')}>
+                    <ModalHeader toggle={() => this.handleModalToggle('export')}>
+                        Export Type Chart
+                    </ModalHeader>
+                    <ModalBody>
+                        <Card body style={{ marginBottom: '2%' }}>
+                            <CardTitle tag="h4">Export as PNG</CardTitle>
+                            <CardText>Export as an image to store or share. Note that PNGs cannot be imported to edit in the future.</CardText>
+                            <CardText />
+                            <Button color="success" onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: this.state.title.replaceAll(' ', '-') })}>Export</Button>
+                        </Card>
+                        <Card body>
+                            <CardTitle tag="h4">Export as JSON</CardTitle>
+                            <CardText>Export as metadata to store for later use. This file can be imported in the future to view and edit from this site.</CardText>
+                            <CardText><Input type="checkbox" id="check" onChange={(e) => this.handleExportCheckboxChange(e)} checked={this.state.exportIncludeTypecombos} style={{ marginLeft: 'inherit' }} /><Label for="check" style={{ marginLeft: '5%' }}>Include Type Combos</Label></CardText>
+                            <Button color="success" onClick={() => this.handleExportAsJSON()}>Export</Button>
+                        </Card>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" onClick={() => this.handleModalToggle('export')}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             </div>
