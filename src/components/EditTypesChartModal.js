@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ListGroup } from 'reactstrap';
 import TypeField from './TypeField';
 import { FaPlus } from 'react-icons/fa';
@@ -141,5 +142,19 @@ class EditTypesChartModal extends React.Component {
         );
     }
 }
+
+EditTypesChartModal.propTypes = {
+    title: PropTypes.string.isRequired,
+    types: PropTypes.objectOf(PropTypes.shape({
+        color: PropTypes.string.isRequired,
+        values: PropTypes.arrayOf(PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string
+        ])).isRequired
+    })).isRequired,
+    modalVisibility: PropTypes.bool.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    toggle: PropTypes.func.isRequired
+};
 
 export default EditTypesChartModal;

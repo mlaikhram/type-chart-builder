@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { View, Text } from 'react-native';
 
 class HorizontalTypeCell extends React.Component {
@@ -32,5 +33,14 @@ class HorizontalTypeCell extends React.Component {
         );
     }
 }
+
+HorizontalTypeCell.propTypes = {
+    type: PropTypes.string.isRequired,
+    color: PropTypes.string.isRequired,
+    opacity: PropTypes.number,
+    rightAlign: PropTypes.bool,
+    hoverable: PropTypes.bool,
+    onClick: PropTypes.func
+};
 
 export default HorizontalTypeCell;

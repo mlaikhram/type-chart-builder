@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Input } from 'reactstrap';
 import { View } from 'react-native';
 import { Textfit } from 'react-textfit';
@@ -102,5 +103,19 @@ class TypeMultiplierCell extends React.Component {
         }
     }
 }
+
+TypeMultiplierCell.propTypes = {
+    defendingTypeNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+    attackIndex: PropTypes.number.isRequired,
+    typeLookup: PropTypes.objectOf(PropTypes.shape({
+        color: PropTypes.string.isRequired,
+        values: PropTypes.arrayOf(PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string
+        ])).isRequired
+    })).isRequired,
+    edittable: PropTypes.bool,
+    onChange: PropTypes.func
+};
 
 export default TypeMultiplierCell;

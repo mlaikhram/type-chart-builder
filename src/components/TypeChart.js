@@ -35,7 +35,6 @@ class TypeChart extends React.Component {
                 'Meeting': { color: '#E60000', values: [0.5, 0.5, 2, 0.5, 0.5, 1] },
                 'Sleep': { color: '#3D3D3D', values: [0.5, 2, 1, 2, 0.5, 2] }
             },
-            activeTypeComboIndex: -1,
             typeCombos: [
                 {
                     name: 'Programmer',
@@ -81,7 +80,7 @@ class TypeChart extends React.Component {
     }
 
     handleEditTypesSubmit(editTypesForm) {
-        const newTitle = this.state.editTitle;
+        const newTitle = editTypesForm.editTitle;
         // construct type chart and fix any new type refs
         const newTypes = {};
         for (let defendIndex = 0; defendIndex < editTypesForm.editTypes.length; ++defendIndex) {
@@ -162,27 +161,14 @@ class TypeChart extends React.Component {
         }].concat(this.state.typeCombos);
         this.setState((state) => {
             state.typeCombos = newTypeCombos;
-            state.activeTypeComboIndex = 0;
             return state;
         })
     }
 
-    handleTypeComboActive(index) {
-        const newIndex = this.state.activeTypeComboIndex === index ? -1 : index;
+    handleTypeComboEditted(index, name, types) {
         this.setState((state) => {
-            state.activeTypeComboIndex = newIndex;
-            return state;
-        });
-    }
-
-    handleTypeComboTypeClicked(index, typeName) {
-        console.log('type: ' + typeName);
-        const newTypes = this.state.typeCombos[index].types.includes(typeName) ?
-            this.state.typeCombos[index].types.filter((_) => _ !== typeName) : 
-            this.state.typeCombos[index].types.concat(typeName);
-
-        this.setState((state) => {
-            state.typeCombos[index].types = newTypes;
+            state.typeCombos[index].name = name;
+            state.typeCombos[index].types = types;
             return state;
         });
     }
@@ -191,7 +177,6 @@ class TypeChart extends React.Component {
         const newTypeCombos = this.state.typeCombos.filter((_, i) => i !== index);
         this.setState((state) => {
             state.typeCombos = newTypeCombos;
-            state.activeTypeComboIndex = -1;
             return state;
         });
     }
@@ -332,7 +317,7 @@ class TypeChart extends React.Component {
                     <Col style={{ paddingLeft: '5%', paddingBottom: '5%' }}>
                         <Row>
                             <div ref={this.typeChartImageRef}>
-                                <Text style={{ paddingLeft: '1%', paddingBottom: '4%', display: 'inherit', textAlign: 'center', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', transform: [{ translateX: -40 }] }}>{this.state.title}</Text>
+                                <Text style={{ paddingLeft: '1%', paddingBottom: '10px', display: 'inherit', textAlign: 'center', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', transform: [{ translateX: -40 }] }}>{this.state.title}</Text>
                                 <div style={{ paddingLeft: '40px' }}>
                                     <h6>
                                         <Text style={{ fontSize: 20, fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', }}>
@@ -363,9 +348,9 @@ class TypeChart extends React.Component {
                     </Col>
                     <Col>
                         <Button color="success" block onClick={() => this.handleTypeComboAdd()} style={{ marginBottom: '1%' }}><FaPlus /></Button>
-                        <ListGroup>
-                            {this.state.typeCombos.map((typeCombo, index) => (<TypeCombo key={index} active={this.state.activeTypeComboIndex === index} typeLookup={this.state.types} typeCombo={typeCombo} onActive={() => this.handleTypeComboActive(index)} onNameChange={(e) => this.handleNameChange(e, index)} onTypeClick={(typeName) => this.handleTypeComboTypeClicked(index, typeName)} onDelete={() => this.handleTypeComboDelete(index)} />))}
-                        </ListGroup>
+                        <div className="list-group">
+                            {this.state.typeCombos.map((typeCombo, index) => (<TypeCombo key={index} typeLookup={this.state.types} name={typeCombo.name} types={typeCombo.types} onEditted={(name, types) => this.handleTypeComboEditted(index, name, types)} onDelete={() => this.handleTypeComboDelete(index)} />))}
+                        </div>
                     </Col>
                 </Row>
 
@@ -381,7 +366,7 @@ class TypeChart extends React.Component {
                             <CardTitle tag="h4">Import from Preset</CardTitle>
                             <CardText>Import a premade type chart to view and customize.</CardText>
                             <CardText />
-                            <Button color="success" onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: this.state.title.replaceAll(' ', '-') })}>Import</Button>
+                            <Button color="success" onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: this.state.title.replaceAll(' ', '-'), letterRendering: true, scale: 2 })}>Import</Button>
                         </Card>
                         <Card body>
                             <CardTitle tag="h4">Import from JSON</CardTitle>
@@ -405,7 +390,7 @@ class TypeChart extends React.Component {
                             <CardTitle tag="h4">Export as PNG</CardTitle>
                             <CardText>Export as an image to store or share. Note that PNGs cannot be imported to edit in the future.</CardText>
                             <CardText />
-                            <Button color="success" onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: this.state.title.replaceAll(' ', '-') })}>Export</Button>
+                            <Button color="success" onClick={() => exportComponentAsPNG(this.typeChartImageRef, { fileName: this.state.title.replaceAll(' ', '-'), html2CanvasOptions: { letterRendering: true, scale: 2, backgroundColor: 'azure' }})}>Export</Button>
                         </Card>
                         <Card body>
                             <CardTitle tag="h4">Export as JSON</CardTitle>
