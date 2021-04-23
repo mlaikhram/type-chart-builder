@@ -7,10 +7,11 @@ import TypeCombo from './TypeCombo';
 import VerticalTypeCellMap from './VerticalTypeCellMap';
 import TypeMultiplierCell from './TypeMultiplierCell';
 import HorizontalTypeCell from './HorizontalTypeCell';
-import TypeField from './TypeField';
+import EditTypesChartModal from './EditTypesChartModal';
 import { FaPlus } from 'react-icons/fa';
 import { BiEditAlt } from 'react-icons/bi';
 import { AiOutlineExport, AiOutlineImport } from 'react-icons/ai';
+
 
 
 class TypeChart extends React.Component {
@@ -42,15 +43,6 @@ class TypeChart extends React.Component {
                         'Human',
                         'Coder'
                     ]
-                }
-            ],
-            editTitle: '',
-            editTypes: [
-                {
-                    oldName: '',
-                    newName: '',
-                    color: '',
-                    errorMessage: ''
                 }
             ],
             exportIncludeTypecombos: false,
@@ -88,128 +80,47 @@ class TypeChart extends React.Component {
             );
     }
 
-    handleEditTitleNameChanged(e) {
-        const newTitle = e.target.value;
-        this.setState((state) => {
-            state.editTitle = newTitle;
-            return state;
-        })
-    }
-
-    handleEditTypeNameChanged(e, index) {
-        const newName = e.target.value;
-
-        if (/^[a-zA-Z]/.test(newName) || newName.length <= 0) {
-            this.setState((state) => {
-                state.editTypes[index].newName = newName;
-                return state;
-            });
-        }
-    }
-
-    handleEditTypeColorChanged(e, index) {
-        const newColor = e.target.value;
-
-        this.setState((state) => {
-            state.editTypes[index].color = newColor;
-            return state;
-        });
-    }
-
-    handleEditTypeDelete(index) {
-        if (this.state.editTypes.length > 1) {
-            const newEditTypes = this.state.editTypes.filter((_, i) => i !== index);
-            this.setState((state) => {
-                state.editTypes = newEditTypes;
-                return state;
-            });
-        }
-    }
-
-    handleEditTypeAdd() {
-        const newEditTypes = this.state.editTypes.concat({
-            oldName: '',
-            newName: '',
-            color: '#FFFFFF',
-            errorMessage: ''
-        });
-        this.setState((state) => {
-            state.editTypes = newEditTypes;
-            return state;
-        })
-    }
-
-    handleEditTypesSubmit() {
-        // validation for blank or duplicate names
-        const newEditTypes = [];
-        let isValid = true;
-        const uniqueNames = new Set();
-        for (let i = 0; i < this.state.editTypes.length; ++i) {
-            let errorMessage = '';
-            if (this.state.editTypes[i].newName.length <= 0) {
-                isValid = false;
-                errorMessage = 'Name cannot be blank';
-            } else if (uniqueNames.has(this.state.editTypes[i].newName)) {
-                isValid = false;
-                errorMessage = 'Type "' + this.state.editTypes[i].newName + '" already exists';
-            } else {
-                uniqueNames.add(this.state.editTypes[i].newName);
-            }
-            newEditTypes.push({
-                oldName: this.state.editTypes[i].oldName,
-                newName: this.state.editTypes[i].newName,
-                color: this.state.editTypes[i].color,
-                errorMessage: errorMessage
-            })
-        }
-        if (!isValid) {
-            this.setState((state) => {
-                state.editTypes = newEditTypes;
-                return state;
-            });
-        }
-        else {
-            const newTitle = this.state.editTitle;
-            // construct type chart and fix any new type refs
-            const newTypes = {};
-            for (let defendIndex = 0; defendIndex < this.state.editTypes.length; ++defendIndex) {
-                newTypes[this.state.editTypes[defendIndex].newName] = {
-                    color: this.state.editTypes[defendIndex].color,
-                    values: []
-                };
-                for (let attackIndex = 0; attackIndex < this.state.editTypes.length; ++attackIndex) {
-                    if (this.state.editTypes[defendIndex].oldName.length <= 0 || this.state.editTypes[attackIndex].oldName.length <= 0) {
-                        newTypes[this.state.editTypes[defendIndex].newName].values.push(1);
-                    }
-                    else {
-                        const oldAttackIndex = Object.keys(this.state.types).indexOf(this.state.editTypes[attackIndex].oldName);
-                        newTypes[this.state.editTypes[defendIndex].newName].values.push(this.state.types[this.state.editTypes[defendIndex].oldName].values[oldAttackIndex]);
-                    }
+    handleEditTypesSubmit(editTypesForm) {
+        const newTitle = this.state.editTitle;
+        // construct type chart and fix any new type refs
+        const newTypes = {};
+        for (let defendIndex = 0; defendIndex < editTypesForm.editTypes.length; ++defendIndex) {
+            newTypes[editTypesForm.editTypes[defendIndex].newName] = {
+                color: editTypesForm.editTypes[defendIndex].color,
+                values: []
+            };
+            for (let attackIndex = 0; attackIndex < editTypesForm.editTypes.length; ++attackIndex) {
+                if (editTypesForm.editTypes[defendIndex].oldName.length <= 0 || editTypesForm.editTypes[attackIndex].oldName.length <= 0) {
+                    newTypes[editTypesForm.editTypes[defendIndex].newName].values.push(1);
+                }
+                else {
+                    const oldAttackIndex = Object.keys(this.state.types).indexOf(editTypesForm.editTypes[attackIndex].oldName);
+                    newTypes[editTypesForm.editTypes[defendIndex].newName].values.push(this.state.types[editTypesForm.editTypes[defendIndex].oldName].values[oldAttackIndex]);
                 }
             }
-            // update refs for type combos, and remove refs to deleted types
-            const newTypeCombos = [];
-            for (let i = 0; i < this.state.typeCombos.length; ++i) {
-                const typeCombo = {
-                    name: this.state.typeCombos[i].name,
-                    types: []
-                };
-                this.state.typeCombos[i].types.forEach((oldType) => {
-                    const currentEditType = this.state.editTypes.find((editType) => editType.oldName === oldType);
-                    if (currentEditType) {
-                        typeCombo.types.push(currentEditType.newName);
-                    }
-                });
-                newTypeCombos.push(typeCombo);
-            }
-            this.setState((state) => {
-                state.title = newTitle;
-                state.types = newTypes;
-                state.typeCombos = newTypeCombos;
-                state.modalVisibility.edit = false;
-                return state;
-            });
         }
+        // update refs for type combos, and remove refs to deleted types
+        const newTypeCombos = [];
+        for (let i = 0; i < this.state.typeCombos.length; ++i) {
+            const typeCombo = {
+                name: this.state.typeCombos[i].name,
+                types: []
+            };
+            this.state.typeCombos[i].types.forEach((oldType) => {
+                const currentEditType = editTypesForm.editTypes.find((editType) => editType.oldName === oldType);
+                if (currentEditType) {
+                    typeCombo.types.push(currentEditType.newName);
+                }
+            });
+            newTypeCombos.push(typeCombo);
+        }
+        this.setState((state) => {
+            state.title = newTitle;
+            state.types = newTypes;
+            state.typeCombos = newTypeCombos;
+            state.modalVisibility.edit = false;
+            return state;
+        });
     }
 
     handleOpenEditModal() {
@@ -445,7 +356,7 @@ class TypeChart extends React.Component {
                             </div>
                         </Row>
                         <Row style={{ paddingTop: '2%' }}>
-                            <Button color="info" onClick={() => this.handleOpenEditModal()}><BiEditAlt /></Button>
+                            <Button color="info" onClick={() => this.handleModalToggle('edit')}><BiEditAlt /></Button>
                             <Button color="primary" onClick={() => this.handleOpenImportModal()}><AiOutlineImport /></Button>
                             <Button color="success" onClick={() => this.handleModalToggle('export')}><AiOutlineExport /></Button>
                         </Row>
@@ -458,22 +369,7 @@ class TypeChart extends React.Component {
                     </Col>
                 </Row>
 
-                {/*Edit Type Chart Modal*/}
-                <Modal isOpen={this.state.modalVisibility.edit} backdrop="static" toggle={() => this.handleModalToggle('edit')}>
-                    <ModalHeader toggle={() => this.handleModalToggle('edit')}>
-                        <Input id="title" type="text" onChange={(e) => this.handleEditTitleNameChanged(e)} value={this.state.editTitle} />
-                    </ModalHeader>
-                    <ModalBody>
-                        <ListGroup flush>
-                            {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
-                        </ListGroup>
-                        <Button color="success" block onClick={() => this.handleEditTypeAdd()} style={{ marginTop: '2%' }}><FaPlus /></Button>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="success" onClick={() => this.handleEditTypesSubmit()}>Save</Button>
-                        <Button color="danger" onClick={() => this.handleModalToggle('edit')}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
+                <EditTypesChartModal title={this.state.title} types={this.state.types} modalVisibility={this.state.modalVisibility.edit} toggle={() => this.handleModalToggle('edit')} onSubmit={(form) => this.handleEditTypesSubmit(form)} />
 
                 {/*Import Type Chart Modal*/}
                 <Modal isOpen={this.state.modalVisibility.import} backdrop="static" toggle={() => this.handleModalToggle('import')}>
