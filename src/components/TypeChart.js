@@ -1,14 +1,13 @@
 import React from 'react';
 import { Row, Col, Button } from 'reactstrap';
 import { View, Text } from 'react-native';
-import TypeCombo from './TypeCombo';
+import TypeComboList from './TypeComboList';
 import VerticalTypeCellMap from './VerticalTypeCellMap';
 import TypeMultiplierCell from './TypeMultiplierCell';
 import HorizontalTypeCell from './HorizontalTypeCell';
 import EditTypesChartModal from './EditTypesChartModal';
 import ImportTypeChartModal from './ImportTypeChartModal';
 import ExportTypeChartModal from './ExportTypeChartModal';
-import { FaPlus } from 'react-icons/fa';
 import { BiEditAlt } from 'react-icons/bi';
 import { AiOutlineExport, AiOutlineImport } from 'react-icons/ai';
 
@@ -25,7 +24,7 @@ class TypeChart extends React.Component {
                 import: false,
                 export: false
             },
-            title: 'Industry Type Chart',
+            title: 'Software Engineering',
             types: {
                 'Human': { color: '#C77B3D', values: [2, 1, 2, 1, 2, 2]},
                 'Bug': { color: '#86FF24', values: [2, 0.5, 1, 1, 1, 0.5] },
@@ -64,6 +63,14 @@ class TypeChart extends React.Component {
                 {typesArr.map((typeName, innerIndex) => (<TypeMultiplierCell key={index + "_" + innerIndex} typeLookup={this.state.types} defendingTypeNames={[typesArr[innerIndex]]} attackIndex={index} edittable={true} onChange={(e) => this.handleTypeMultiplierCellChange(e, typesArr[innerIndex], index)} />))}
             </tr>
             );
+    }
+
+    handleModalToggle(modalName) {
+        const prev = this.state.modalVisibility[modalName];
+        this.setState((state) => {
+            state.modalVisibility[modalName] = !prev;
+            return state;
+        });
     }
 
     handleEditTypesSubmit(editTypesForm) {
@@ -109,37 +116,9 @@ class TypeChart extends React.Component {
         });
     }
 
-    handleModalToggle(modalName) {
-        const prev = this.state.modalVisibility[modalName];
+    handleTypeComboListChanged(typeCombos) {
         this.setState((state) => {
-            state.modalVisibility[modalName] = !prev;
-            return state;
-        });
-    }
-
-    handleTypeComboAdd() {
-        const newTypeCombos = [{
-            name: '',
-            types: []
-        }].concat(this.state.typeCombos);
-        this.setState((state) => {
-            state.typeCombos = newTypeCombos;
-            return state;
-        })
-    }
-
-    handleTypeComboEditted(index, name, types) {
-        this.setState((state) => {
-            state.typeCombos[index].name = name;
-            state.typeCombos[index].types = types;
-            return state;
-        });
-    }
-
-    handleTypeComboDelete(index) {
-        const newTypeCombos = this.state.typeCombos.filter((_, i) => i !== index);
-        this.setState((state) => {
-            state.typeCombos = newTypeCombos;
+            state.typeCombos = typeCombos;
             return state;
         });
     }
@@ -193,10 +172,7 @@ class TypeChart extends React.Component {
                         </Row>
                     </Col>
                     <Col>
-                        <Button color="success" block onClick={() => this.handleTypeComboAdd()} style={{ marginBottom: '1%' }}><FaPlus /></Button>
-                        <div className="list-group">
-                            {this.state.typeCombos.map((typeCombo, index) => (<TypeCombo key={index} typeLookup={this.state.types} name={typeCombo.name} types={typeCombo.types} onEditted={(name, types) => this.handleTypeComboEditted(index, name, types)} onDelete={() => this.handleTypeComboDelete(index)} />))}
-                        </div>
+                        <TypeComboList typeLookup={this.state.types} typeCombos={this.state.typeCombos} onSendChanges={(typeCombos) => this.handleTypeComboListChanged(typeCombos)} />
                     </Col>
                 </Row>
                 <EditTypesChartModal title={this.state.title} types={this.state.types} modalVisibility={this.state.modalVisibility.edit} toggle={() => this.handleModalToggle('edit')} onSubmit={(form) => this.handleEditTypesSubmit(form)} />
