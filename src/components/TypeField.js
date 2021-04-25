@@ -9,7 +9,7 @@ function TypeField(props) {
     return (
         <ListGroupItem style={{ paddingLeft: '0%' }}>
             <Row>
-                <Col sm={2} style={{ paddingLeft: '5%' }}><Button color="danger" onClick={props.onDelete}><BsFillTrashFill /></Button></Col>
+                <Col sm={2} style={{ paddingLeft: '5%', visibility: (props.deletable ? 'visible' : 'hidden') }}><Button color="danger" onClick={props.deletable ? props.onDelete : null}><BsFillTrashFill /></Button></Col>
                 <Col sm={6} style={{ paddingRight: '1%' }}><Input value={props.typeName} onChange={props.onTypeNameChange} invalid={props.errorMessage.length > 0} id={"typeFieldId" + props.uniqueId} /></Col>
                 <Col sm={1} style={{ paddingRight: 0, paddingLeft: '1%' }}><Input type="color" value={props.color} onChange={props.onColorChange} style={{ padding: '5%', cursor: 'pointer' }} /></Col>
                 <Col sm={3} style={{ paddingLeft: '8%' }} ><HorizontalTypeCell type={props.typeName} color={props.color} /></Col>
@@ -28,6 +28,7 @@ TypeField.propTypes = {
     ]),
     typeName: PropTypes.string.isRequired,
     color: PropTypes.string.isRequired,
+    deletable: PropTypes.bool,
     errorMessage: PropTypes.string,
     onTypeNameChange: PropTypes.func,
     onColorChange: PropTypes.func,

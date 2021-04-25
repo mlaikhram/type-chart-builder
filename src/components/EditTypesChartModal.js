@@ -123,7 +123,7 @@ class EditTypesChartModal extends React.Component {
                 </ModalHeader>
                 <ModalBody>
                     <ListGroup flush>
-                        {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
+                        {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} deletable={ this.state.editTypes.length > 2} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
                     </ListGroup>
                     <Button color="success" block onClick={() => this.handleEditTypeAdd()} style={{ marginTop: '2%' }}><FaPlus /></Button>
                 </ModalBody>
