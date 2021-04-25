@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, Card, CardTitle, CardText } from 'reactstrap';
-import { Presets } from "../presets";
+import { Presets } from "presets";
 
 
 class ImportTypeChartModal extends React.Component {
