@@ -15,7 +15,7 @@ class App extends React.Component {
         super();
 
         if (window.location.href.includes('?')) {
-            window.location.href = '/';
+            window.location.href = window.location.href.substring(0, window.location.href.indexOf('?'));
         }
 
         this.typeChartImageRef = React.createRef();
@@ -129,7 +129,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <Navbar color="dark" dark expand="md">
-                    <NavbarBrand href="/">TypeCharts</NavbarBrand>
+                    <NavbarBrand>TypeCharts</NavbarBrand>
                     <Collapse navbar>
                         <Nav className="mr-auto" navbar>
                             <NavItem>
