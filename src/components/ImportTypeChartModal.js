@@ -8,7 +8,6 @@ class ImportTypeChartModal extends React.Component {
 
     constructor() {
         super();
-        console.log(Presets);
         this.importFile = null;
 
         this.state = {
@@ -34,7 +33,6 @@ class ImportTypeChartModal extends React.Component {
     }
 
     handleImportdata(importedData) {
-        console.log(importedData);
         // check for title
         if (!importedData.hasOwnProperty("title")) {
             throw new Error('Missing or invalid title');
@@ -110,7 +108,6 @@ class ImportTypeChartModal extends React.Component {
                     this.handleImportdata(importedData);
                 }
                 catch (e) {
-                    console.log(e);
                     this.importFile = null;
                     this.setState((state) => {
                         state.importFileError = "Error parsing file: " + e.message;

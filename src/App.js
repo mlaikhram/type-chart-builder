@@ -14,6 +14,10 @@ class App extends React.Component {
     constructor() {
         super();
 
+        if (window.location.href.includes('?')) {
+            window.location.href = '/';
+        }
+
         this.typeChartImageRef = React.createRef();
         this.watermarkId = "TypeChartWatermark";
 
@@ -47,7 +51,6 @@ class App extends React.Component {
 
     handleTypeMultiplierCellChange(e, typeName, attackIndex) {
         const newValue = e.target.value;
-        console.log('new value: ' + newValue);
         this.setState((state) => {
             state.types[typeName].values[attackIndex] = newValue;
             return state;
@@ -126,7 +129,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <Navbar color="dark" dark expand="md">
-                    <NavbarBrand>TypeCharts</NavbarBrand>
+                    <NavbarBrand href="/">TypeCharts</NavbarBrand>
                     <Collapse navbar>
                         <Nav className="mr-auto" navbar>
                             <NavItem>

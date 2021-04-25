@@ -37,7 +37,6 @@ class TypeMultiplierCell extends React.Component {
     handleOnValueChange(e) {
         const newValue = e.target.value;
         const valueString = newValue.toString();
-        console.log('value: ' + valueString);
         if (!valueString.includes('-') && newValue >= 0) {
             this.setState((state) => {
                 state.editValue = newValue;
