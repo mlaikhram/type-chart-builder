@@ -1,6 +1,7 @@
 import 'App.css';
 import React from 'react';
-import { Row, Col, Button, Collapse, Navbar, NavbarBrand, Nav, NavItem, NavLink, NavbarText } from 'reactstrap';
+import { Row, Col, Button, Collapse, Navbar, NavbarBrand, Nav, NavItem, NavLink, NavbarText, Modal, ModalBody } from 'reactstrap';
+import { View } from 'react-native';
 import TypeChart from 'components/TypeChart';
 import TypeComboList from 'components/TypeComboList';
 import EditTypesChartModal from 'components/EditTypesChartModal';
@@ -14,12 +15,14 @@ class App extends React.Component {
         super();
 
         this.typeChartImageRef = React.createRef();
+        this.watermarkId = "TypeChartWatermark";
 
         this.state = {
             modalVisibility: {
                 edit: false,
                 import: false,
-                export: false
+                export: false,
+                info: false
             },
             title: 'Software Engineering',
             types: {
@@ -127,7 +130,7 @@ class App extends React.Component {
                     <Collapse navbar>
                         <Nav className="mr-auto" navbar>
                             <NavItem>
-                                <NavLink href="/components/">Components</NavLink>
+                                <NavLink onClick={() => this.handleModalToggle('info')} style={{ cursor: 'pointer' }}>Info</NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink href="https://github.com/mlaikhram/type-chart-builder" target="_blank">GitHub</NavLink>
@@ -138,15 +141,17 @@ class App extends React.Component {
                 </Navbar>
                 <div className="container-fluid">
                     <Row style={{ paddingTop: '40px' }}>
-                        <Col style={{ paddingLeft: '5%', paddingBottom: '5%' }}>
+                        <Col style={{ paddingLeft: '3%', paddingBottom: '5%' }}>
                             <Row>
-                                <TypeChart ref={this.typeChartImageRef} title={this.state.title} types={this.state.types} onTypeMultiplierCellChange={(e, typeName, attackIndex) => this.handleTypeMultiplierCellChange(e, typeName, attackIndex)} />
+                                <TypeChart ref={this.typeChartImageRef} title={this.state.title} types={this.state.types} onTypeMultiplierCellChange={(e, typeName, attackIndex) => this.handleTypeMultiplierCellChange(e, typeName, attackIndex)} watermarkId={this.watermarkId} />
                             </Row>
-                            <Row style={{ paddingTop: '2%' }}>
-                                <Button color="info" onClick={() => this.handleModalToggle('edit')}><BiEditAlt /></Button>
-                                <Button color="primary" onClick={() => this.handleModalToggle('import')}><AiOutlineImport /></Button>
-                                <Button color="success" onClick={() => this.handleModalToggle('export')}><AiOutlineExport /></Button>
-                            </Row>
+                            <View style={{ display: 'inherit', transform: [{translateY: '-40px'}] }}>
+                                <Row style={{ paddingLeft: '75px' }}>
+                                    <Button color="info" onClick={() => this.handleModalToggle('edit')}><BiEditAlt /></Button>
+                                    <Button color="primary" onClick={() => this.handleModalToggle('import')}><AiOutlineImport /></Button>
+                                    <Button color="success" onClick={() => this.handleModalToggle('export')}><AiOutlineExport /></Button>
+                                </Row>
+                            </View>
                         </Col>
                         <Col>
                             <TypeComboList typeLookup={this.state.types} typeCombos={this.state.typeCombos} onSendChanges={(typeCombos) => this.handleTypeComboListChanged(typeCombos)} />
@@ -154,7 +159,54 @@ class App extends React.Component {
                     </Row>
                     <EditTypesChartModal title={this.state.title} types={this.state.types} modalVisibility={this.state.modalVisibility.edit} toggle={() => this.handleModalToggle('edit')} onSubmit={(form) => this.handleEditTypesSubmit(form)} />
                     <ImportTypeChartModal onImport={(title, types, typeCombos) => this.handleImport(title, types, typeCombos)} modalVisibility={this.state.modalVisibility.import} toggle={() => this.handleModalToggle('import')} />
-                    <ExportTypeChartModal title={this.state.title} types={this.state.types} typeCombos={this.state.typeCombos} typeChartImageRef={this.typeChartImageRef} modalVisibility={this.state.modalVisibility.export} toggle={() => this.handleModalToggle('export')} />
+                    <ExportTypeChartModal title={this.state.title} types={this.state.types} typeCombos={this.state.typeCombos} typeChartImageRef={this.typeChartImageRef} modalVisibility={this.state.modalVisibility.export} toggle={() => this.handleModalToggle('export')} watermarkId={this.watermarkId} />
+                    <Modal isOpen={this.state.modalVisibility.info} toggle={() => this.handleModalToggle('info')}>
+                        <ModalBody>
+                            <h5>What is TypeCharts?</h5>
+                            <p>
+                                Typecharts is a sandbox for gamers and designers to experiment with Type Charts 
+                                and type combinations either for existing games or for the purpose of building 
+                                a game that utilizes the Type Chart as a combat mechanic.
+                            </p>
+                            <h5>What can I do in TypeCharts?</h5>
+                            <p>
+                                TypeCharts allows you to customize your Type Chart by editting the values directly 
+                                in each cell and by using the various options listed below:
+                            </p>
+                            <ul>
+                                <li>
+                                    <BiEditAlt />Edit: Modify the title and types displayed in the Type Chart
+                                </li>
+                                <li>
+                                    <AiOutlineImport />Import: Load an existing Type Chart from one of the presets
+                                    available, or from a previously exported file
+                                </li>
+                                <li>
+                                    <AiOutlineExport />Export: Save your Type Chart as an image or as a tych.json
+                                    file, which can be re-imported for later use
+                                </li>
+                            </ul>
+                            <p>
+                                With TypeCharts, you can also test out your creation by adding Type Combos using
+                                the <b>New Type Combo</b> button. Each Type Combo allows you to add a name and one 
+                                or more types, which it will then use to calculate your combo's stats. This can help 
+                                you determine which type combos are best for your strategy, or in a designer's case 
+                                it could help determine if your type chart needs tweaking based on under/overtuned 
+                                combinations.
+                            </p>
+                            <h5>Upcoming Features</h5>
+                            <p>
+                                While TypeCharts is currently geared toward defensive typing analysis, there are 
+                                plans to implement a feature for analysing offensive type combinations as well. 
+                                Look out for more updates on that!
+                            </p>
+                            <p>
+                                There are also various QoL updates being looked into, including a visual indicator to 
+                                help more quickly determine which two types intersect with the Type Chart cell you are 
+                                currently hovering over.
+                            </p>
+                        </ModalBody>
+                    </Modal>
                 </div>
             </div>
         );

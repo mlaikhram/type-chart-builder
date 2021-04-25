@@ -22,6 +22,16 @@ class ExportTypeChartModal extends React.Component {
         });
     }
 
+    handleExportAsPNG() {
+        exportComponentAsPNG(this.props.typeChartImageRef, {
+            fileName: this.props.title.replaceAll(' ', '-'), html2CanvasOptions: {
+                letterRendering: true, scale: 2, backgroundColor: 'azure', onclone: (clone) => {
+                    clone.getElementById(this.props.watermarkId).style.visibility = "visible";
+                }
+            }
+        });
+    }
+
     handleExportAsJSON() {
         console.log('exporting as json');
         const exportData = {
@@ -45,7 +55,7 @@ class ExportTypeChartModal extends React.Component {
                         <CardTitle tag="h4">Export as PNG</CardTitle>
                         <CardText>Export as an image to store or share. Note that PNGs cannot be imported to edit in the future.</CardText>
                         <CardText />
-                        <Button color="success" onClick={() => exportComponentAsPNG(this.props.typeChartImageRef, { fileName: this.props.title.replaceAll(' ', '-'), html2CanvasOptions: { letterRendering: true, scale: 2, backgroundColor: 'azure' } })}>Export</Button>
+                        <Button color="success" onClick={() => this.handleExportAsPNG()}>Export</Button>
                     </Card>
                     <Card body>
                         <CardTitle tag="h4">Export as JSON</CardTitle>
@@ -83,7 +93,8 @@ ExportTypeChartModal.propTypes = {
         })
     ]).isRequired,
     modalVisibility: PropTypes.bool.isRequired,
-    toggle: PropTypes.func.isRequired
+    toggle: PropTypes.func.isRequired,
+    watermarkId: PropTypes.string.isRequired
 };
 
 export default ExportTypeChartModal;

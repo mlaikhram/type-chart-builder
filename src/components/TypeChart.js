@@ -15,7 +15,7 @@ class TypeChart extends React.Component {
                 </td>
                 {typesArr.map((typeName, innerIndex) => (<TypeMultiplierCell key={index + "_" + innerIndex} typeLookup={this.props.types} defendingTypeNames={[typesArr[innerIndex]]} attackIndex={index} edittable={true} onChange={(e) => this.props.onTypeMultiplierCellChange(e, typesArr[innerIndex], index)} />))}
             </tr>
-        );  // TODO: replace with onBlur
+        );
     }
 
     render() {
@@ -23,14 +23,21 @@ class TypeChart extends React.Component {
 
         return (
             <div>
-                <Text style={{ paddingLeft: '1%', paddingBottom: '10px', display: 'inherit', textAlign: 'center', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', transform: [{ translateX: -40 }] }}>{this.props.title}</Text>
-                <div style={{ paddingLeft: '40px' }}>
+                <Text style={{ paddingBottom: '10px', display: 'inherit', textAlign: 'center', width: 0, minWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 'x-large', fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF' }}>{this.props.title}</Text>
+                <div style={{ paddingLeft: '115px' }}>
                     <h6>
                         <Text style={{ fontSize: 20, fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', }}>
                             Defending Type
                         </Text>
                     </h6>
                     <View style={{ paddingTop: '40px', transform: [{ translateX: -40 }] }}>
+                        <View style={{ position: 'absolute', left: 'auto', paddingTop: '45px', top: '50%', transform: [{ rotate: '270deg' }, {translateY: '-115px'}] }}>
+                            <h6>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', textShadow: '-1px 1px 2px #000, 1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000', color: '#FFFFFF', }}>
+                                    Attacking Type
+                                </Text>
+                            </h6>
+                        </View>
                         <table>
                             <thead>
                                 <tr>
@@ -43,6 +50,9 @@ class TypeChart extends React.Component {
                             </tbody>
                         </table>
                     </View>
+                </div>
+                <div id={this.props.watermarkId} style={{ visibility: 'hidden' }}>
+                    <Text style={{ paddingTop: '30px', paddingRight: '2px', paddingBottom: '2px', fontSize: '10px', display: 'block', textAlign: 'end' }}>Made with TypeCharts ({window.location.href})</Text>
                 </div>
             </div>
         );
@@ -58,7 +68,8 @@ TypeChart.propTypes = {
             PropTypes.string
         ])).isRequired
     })).isRequired,
-    onTypeMultiplierCellChange: PropTypes.func.isRequired
+    onTypeMultiplierCellChange: PropTypes.func.isRequired,
+    watermarkId: PropTypes.string
 }
 
 export default TypeChart;

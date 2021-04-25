@@ -58,16 +58,6 @@ class EditTypesChartModal extends React.Component {
         });
     }
 
-    handleEditTypeDelete(index) {
-        if (this.state.editTypes.length > 1) {
-            const newEditTypes = this.state.editTypes.filter((_, i) => i !== index);
-            this.setState((state) => {
-                state.editTypes = newEditTypes;
-                return state;
-            });
-        }
-    }
-
     handleEditTypeAdd() {
         const newEditTypes = this.state.editTypes.concat({
             oldName: '',
@@ -79,6 +69,16 @@ class EditTypesChartModal extends React.Component {
             state.editTypes = newEditTypes;
             return state;
         })
+    }
+
+    handleEditTypeDelete(index) {
+        if (this.state.editTypes.length > 1) {
+            const newEditTypes = this.state.editTypes.filter((_, i) => i !== index);
+            this.setState((state) => {
+                state.editTypes = newEditTypes;
+                return state;
+            });
+        }
     }
 
     handleEditTypesSubmit() {
