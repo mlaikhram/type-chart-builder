@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/type-chart-builder/static/css/main.9d5b29c0.chunk.css",
+    "main.js": "/type-chart-builder/static/js/main.468db02f.chunk.js",
+    "main.js.map": "/type-chart-builder/static/js/main.468db02f.chunk.js.map",
+    "runtime-main.js": "/type-chart-builder/static/js/runtime-main.3e539638.js",
+    "runtime-main.js.map": "/type-chart-builder/static/js/runtime-main.3e539638.js.map",
+    "static/css/2.4c97ca4f.chunk.css": "/type-chart-builder/static/css/2.4c97ca4f.chunk.css",
+    "static/js/2.ce2a23ec.chunk.js": "/type-chart-builder/static/js/2.ce2a23ec.chunk.js",
+    "static/js/2.ce2a23ec.chunk.js.map": "/type-chart-builder/static/js/2.ce2a23ec.chunk.js.map",
+    "static/js/3.864218e6.chunk.js": "/type-chart-builder/static/js/3.864218e6.chunk.js",
+    "static/js/3.864218e6.chunk.js.map": "/type-chart-builder/static/js/3.864218e6.chunk.js.map",
+    "index.html": "/type-chart-builder/index.html",
+    "static/css/2.4c97ca4f.chunk.css.map": "/type-chart-builder/static/css/2.4c97ca4f.chunk.css.map",
+    "static/css/main.9d5b29c0.chunk.css.map": "/type-chart-builder/static/css/main.9d5b29c0.chunk.css.map",
+    "static/js/2.ce2a23ec.chunk.js.LICENSE.txt": "/type-chart-builder/static/js/2.ce2a23ec.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3e539638.js",
+    "static/css/2.4c97ca4f.chunk.css",
+    "static/js/2.ce2a23ec.chunk.js",
+    "static/css/main.9d5b29c0.chunk.css",
+    "static/js/main.468db02f.chunk.js"
+  ]
+}
