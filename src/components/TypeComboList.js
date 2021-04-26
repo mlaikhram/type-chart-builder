@@ -88,7 +88,7 @@ class TypeComboList extends React.Component { // TODO: add ability to switch fro
             <div ref={this.containerRef}>
                 <Button color="success" block onClick={() => this.handleTypeComboAdd()} style={{ marginBottom: '1%' }}>New Type Combo</Button>
                 <div className="list-group">
-                    {(this.hasChanges ? this.state.typeCombos : this.props.typeCombos).map((typeCombo, index) => (<TypeCombo key={index} typeLookup={this.props.typeLookup} name={typeCombo.name} types={typeCombo.types} onEditted={(name, types) => this.handleTypeComboEditted(index, name, types)} onDelete={() => this.handleTypeComboDelete(index)} />))}
+                    {(this.hasChanges ? this.state.typeCombos : this.props.typeCombos).map((typeCombo, index) => (<TypeCombo key={index} uniqueId={'typeComboList' + index} typeLookup={this.props.typeLookup} name={typeCombo.name} types={typeCombo.types} onEditted={(name, types) => this.handleTypeComboEditted(index, name, types)} onDelete={() => this.handleTypeComboDelete(index)} />))}
                 </div>
             </div>
         );

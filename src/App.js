@@ -1,6 +1,6 @@
 import 'App.css';
 import React from 'react';
-import { Row, Col, Button, Collapse, Navbar, NavbarBrand, Nav, NavItem, NavLink, NavbarText, Modal, ModalBody } from 'reactstrap';
+import { Row, Col, Button, Collapse, Navbar, NavbarBrand, Nav, NavItem, NavLink, NavbarText, Modal, ModalBody, UncontrolledTooltip } from 'reactstrap';
 import { View } from 'react-native';
 import TypeChart from 'components/TypeChart';
 import TypeComboList from 'components/TypeComboList';
@@ -28,22 +28,49 @@ class App extends React.Component {
                 export: false,
                 info: false
             },
-            title: 'Software Engineering',
+            title: "Sample",
             types: {
-                'Human': { color: '#C77B3D', values: [2, 1, 2, 1, 2, 2] },
-                'Bug': { color: '#86FF24', values: [2, 0.5, 1, 1, 1, 0.5] },
-                'Tech': { color: '#B6CDC6', values: [0.5, 2, 2, 2, 0, 0] },
-                'Coder': { color: '#00F010', values: [1, 2, 0.5, 0.5, 2, 0] },
-                'Meeting': { color: '#E60000', values: [0.5, 0.5, 2, 0.5, 0.5, 1] },
-                'Sleep': { color: '#3D3D3D', values: [0.5, 2, 1, 2, 0.5, 2] }
+                "Melee": {
+                    color: "#c77b3d",
+                    values: [1, 2, 0.5, 1, 1, 2, 0.5]
+                },
+                "Ranged": {
+                    color: "#80fff6",
+                    values: [0.5, 1, 2, 1, 1, 2, 0.5]
+                },
+                "Armored": {
+                    color: "#bfbfbf",
+                    values: [2, 0.5, 1, 1, 1, 2, 0.5]
+                },
+                "Light": {
+                    color: "#f5ffff",
+                    values: [1, 1, 1, 0.5, 2, 1, 1]
+                },
+                "Dark": {
+                    color: "#3e1b55",
+                    values: [1, 1, 1, 2, 0.5, 1, 1]
+                },
+                "Magic": {
+                    color: "#ff38f8",
+                    values: [1, 1, 1, 2, 2, 2, 1]
+                },
+                "Hexproof": {
+                    color: "#e6ff6b",
+                    values: [1, 1, 1, 0.5, 0.5, 0, 0.5]
+                }
             },
             typeCombos: [
                 {
-                    name: 'Programmer',
-                    types: [
-                        'Human',
-                        'Coder'
-                    ]
+                    name: "Paladin",
+                    types: ["Armored", "Light", "Hexproof"]
+                },
+                {
+                    name: "Fire Mage",
+                    types: ["Ranged", "Magic"]
+                },
+                {
+                    name: "Goblin Soldier",
+                    types: ["Dark", "Melee"]
                 }
             ]
         }
@@ -150,9 +177,12 @@ class App extends React.Component {
                             </Row>
                             <View style={{ display: 'inherit', transform: [{translateY: '-40px'}] }}>
                                 <Row style={{ paddingLeft: '75px' }}>
-                                    <Button color="info" onClick={() => this.handleModalToggle('edit')}><BiEditAlt /></Button>
-                                    <Button color="primary" onClick={() => this.handleModalToggle('import')}><AiOutlineImport /></Button>
-                                    <Button color="success" onClick={() => this.handleModalToggle('export')}><AiOutlineExport /></Button>
+                                    <Button id="editButton" color="info" onClick={() => this.handleModalToggle('edit')} style={{ margin: '0.2%' }}><BiEditAlt /></Button>
+                                    <UncontrolledTooltip target="editButton">Edit</UncontrolledTooltip>
+                                    <Button id="importButton" color="primary" onClick={() => this.handleModalToggle('import')} style={{ margin: '0.2%' }}><AiOutlineImport /></Button>
+                                    <UncontrolledTooltip target="importButton">Import</UncontrolledTooltip>
+                                    <Button id="exportButton" color="success" onClick={() => this.handleModalToggle('export')} style={{ margin: '0.2%' }}><AiOutlineExport /></Button>
+                                    <UncontrolledTooltip target="exportButton">Export</UncontrolledTooltip>
                                 </Row>
                             </View>
                         </Col>
@@ -178,14 +208,14 @@ class App extends React.Component {
                             </p>
                             <ul>
                                 <li>
-                                    <BiEditAlt />Edit: Modify the title and types displayed in the Type Chart
+                                    <BiEditAlt /><b>Edit:</b> Modify the title and types displayed in the Type Chart
                                 </li>
                                 <li>
-                                    <AiOutlineImport />Import: Load an existing Type Chart from one of the presets
+                                    <AiOutlineImport /><b>Import:</b> Load an existing Type Chart from one of the presets
                                     available, or from a previously exported file
                                 </li>
                                 <li>
-                                    <AiOutlineExport />Export: Save your Type Chart as an image or as a tych.json
+                                    <AiOutlineExport /><b>Export:</b> Save your Type Chart as an image or as a tych.json
                                     file, which can be re-imported for later use
                                 </li>
                             </ul>
