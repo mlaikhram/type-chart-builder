@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import TypeCombo from './TypeCombo';
 
-class TypeComboList extends React.Component { // TODO: add ability to switch from defense node to offense node
+class TypeComboList extends React.Component {
 
     constructor() {
         super();

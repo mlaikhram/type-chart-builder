@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 
 class ExportTypeChartModal extends React.Component {
 
-    constructor() { // TODO: include url with png export
+    constructor() {
         super();
         this.state = {
             includeTypeCombos: false

@@ -8,6 +8,9 @@ class EditTypesChartModal extends React.Component {
 
     constructor() {
         super();
+
+        this.minTypeCount = 3;
+
         this.state = {
             editTitle: '',
             editTypes: []
@@ -72,7 +75,7 @@ class EditTypesChartModal extends React.Component {
     }
 
     handleEditTypeDelete(index) {
-        if (this.state.editTypes.length > 1) {
+        if (this.state.editTypes.length > this.minTypeCount) {
             const newEditTypes = this.state.editTypes.filter((_, i) => i !== index);
             this.setState((state) => {
                 state.editTypes = newEditTypes;
@@ -123,7 +126,7 @@ class EditTypesChartModal extends React.Component {
                 </ModalHeader>
                 <ModalBody>
                     <ListGroup flush>
-                        {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} deletable={ this.state.editTypes.length > 2} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
+                        {this.state.editTypes.map((editType, index) => (<TypeField key={index} uniqueId={index} typeName={editType.newName} color={editType.color} deletable={this.state.editTypes.length > this.minTypeCount} errorMessage={editType.errorMessage} onTypeNameChange={(e) => this.handleEditTypeNameChanged(e, index)} onColorChange={(e) => this.handleEditTypeColorChanged(e, index)} onDelete={() => this.handleEditTypeDelete(index)} />))}
                     </ListGroup>
                     <Button color="success" block onClick={() => this.handleEditTypeAdd()} style={{ marginTop: '2%' }}><FaPlus /></Button>
                 </ModalBody>
