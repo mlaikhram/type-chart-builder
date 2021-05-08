@@ -5,6 +5,7 @@ import VerticalTypeCellMap from './VerticalTypeCellMap';
 import TypeMultiplierCell from './TypeMultiplierCell';
 import HorizontalTypeCell from './HorizontalTypeCell';
 import { BsFillTrashFill } from 'react-icons/bs';
+import { FaUndo } from 'react-icons/fa';
 import { BiEditAlt } from 'react-icons/bi';
 import { RiShieldFill, RiSwordFill } from 'react-icons/ri'
 
@@ -34,6 +35,7 @@ class TypeCombo extends React.Component {
 
     handleClickOutside(event) {
         if (this.state.isEditting && this.containerRef && !this.containerRef.current.contains(event.target)) {
+            this.props.onEditted(this.state.name, this.state.types);
             this.setState((state) => {
                 state.isEditting = false;
                 return state;
@@ -41,8 +43,11 @@ class TypeCombo extends React.Component {
         }
     }
 
-    handleToggleEdit() {
+    handleToggleEdit(isCancelled = false) {
         const isEditting = !this.state.isEditting;
+        if (!isEditting && !isCancelled) {
+            this.props.onEditted(this.state.name, this.state.types);
+        }
         this.setState((state) => {
             state.isEditting = isEditting;
             if (isEditting) {
@@ -72,6 +77,25 @@ class TypeCombo extends React.Component {
         });
     }
 
+    renderEditOrCancelButton() {
+        if (this.state.isEditting) {
+            return (
+                <div>
+                    <Button id={this.props.uniqueId + "deleteButton"} color="danger" onClick={() => this.handleToggleEdit(true)} style={{ margin: '2%', float: 'right', height: 'min-content' }}><FaUndo /></Button>
+                    <UncontrolledTooltip target={this.props.uniqueId + "deleteButton"}>Undo</UncontrolledTooltip>
+                </div>
+            );
+        }
+        else {
+            return (
+                <div>
+                    <Button id={this.props.uniqueId + "deleteButton"} color="danger" onClick={() => this.props.onDelete()} style={{ margin: '2%', float: 'right', height: 'min-content' }}><BsFillTrashFill /></Button>
+                    <UncontrolledTooltip target={this.props.uniqueId + "deleteButton"}>Delete</UncontrolledTooltip>
+                </div>
+            );
+        }
+    }
+
     render() {
         const typeArr = Object.keys(this.props.typeLookup);
         return (
@@ -94,7 +118,7 @@ class TypeCombo extends React.Component {
                                         </Row>
                                     </Col>
                                 </Row>
-                                <Collapse isOpen={this.state.isEditting} onExiting={() => this.props.onEditted(this.state.name, this.state.types)}>
+                                <Collapse isOpen={this.state.isEditting}>
                                     <Row style={{ marginLeft: '5%', marginRight: '5%', marginBottom: '2%', paddingTop: '2%' }}>
                                         {Object.keys(this.props.typeLookup).map((typeName) => (<HorizontalTypeCell key={typeName} type={typeName} color={this.props.typeLookup[typeName].color} onClick={() => this.handleTypeClick(typeName)} opacity={this.state.types.includes(typeName) ? 0.25 : 1} hoverable={!this.state.types.includes(typeName)} />))}
                                     </Row>
@@ -119,8 +143,7 @@ class TypeCombo extends React.Component {
                             <div style={{ paddingTop: '1%', display: 'flex' }}>
                                 <Button id={this.props.uniqueId + "editButton"} color="info" onClick={() => this.handleToggleEdit()} style={{ margin: '2%', float: 'right', height: 'min-content' }}><BiEditAlt /></Button>
                                 <UncontrolledTooltip target={this.props.uniqueId + "editButton"}>Edit</UncontrolledTooltip>
-                                <Button id={this.props.uniqueId + "deleteButton"} color="danger" onClick={() => this.props.onDelete()} style={{ margin: '2%', float: 'right', height: 'min-content' }}><BsFillTrashFill /></Button>
-                                <UncontrolledTooltip target={this.props.uniqueId + "deleteButton"}>Delete</UncontrolledTooltip>
+                                {this.renderEditOrCancelButton()}
                             </div>
                         </Row>
                     </div>
